@@ -1,0 +1,22 @@
+name: queen-attack
+
+dependencies:
+  - base
+  - array
+  - split
+  - between
+
+library:
+  exposed-modules: Queens
+  source-dirs: src
+  dependencies:
+  # - foo       # List here the packages you
+  # - bar       # want to use in your solution.
+
+tests:
+  test:
+    main: Tests.hs
+    source-dirs: test
+    dependencies:
+      - queen-attack
+      - hspec
