@@ -10,28 +10,40 @@ module BST
     , toList
     ) where
 
-data BST a = Dummy deriving (Eq, Show)
+import Data.List (foldl')
+
+data BST a = Node (BST a) a (BST a) | BSTNothing
+  deriving (Eq, Show)
+
+forNode :: (BST a -> b) -> BST a -> Maybe b
+forNode _ BSTNothing = Nothing
+forNode f x = Just $ f x
 
 bstLeft :: BST a -> Maybe (BST a)
-bstLeft tree = error "You need to implement this function."
+bstLeft = forNode $ \(Node left _ _) -> left
 
 bstRight :: BST a -> Maybe (BST a)
-bstRight tree = error "You need to implement this function."
+bstRight = forNode $ \(Node _ _ right) -> right
 
 bstValue :: BST a -> Maybe a
-bstValue tree = error "You need to implement this function."
+bstValue = forNode $ \(Node _ v _) -> v
 
 empty :: BST a
-empty = error "You need to implement this function."
+empty = BSTNothing
 
 fromList :: Ord a => [a] -> BST a
-fromList xs = error "You need to implement this function."
+fromList = foldl' (flip insert) BSTNothing
 
 insert :: Ord a => a -> BST a -> BST a
-insert x tree = error "You need to implement this function."
+insert x BSTNothing = singleton x
+insert x (Node left y right) =
+  if x <= y
+  then Node (insert x left) y right
+  else Node left y (insert x right)
 
 singleton :: a -> BST a
-singleton x = error "You need to implement this function."
+singleton x = Node BSTNothing x BSTNothing
 
 toList :: BST a -> [a]
-toList tree = error "You need to implement this function."
+toList BSTNothing = []
+toList (Node left x right) = toList left ++ x:toList right
