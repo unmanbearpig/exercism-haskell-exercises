@@ -25,13 +25,14 @@ actsOn :: Character -> Character -> String
 actsOn subject object = "that " ++ activity subject ++ " the " ++ name object
 
 actions :: [Character] -> [String]
-actions cs = map (uncurry actsOn) $ zip cs (drop 1 cs)
+actions cs = zipWith actsOn cs (drop 1 cs)
 
 chars :: Int -> [Character]
 chars n = drop (length characters - n) characters
 
 verse :: [Character] -> String
-verse cs@(h:_) = intercalate "\n" $ (introduce h):(actions cs)
+verse cs@(h:_) = unlines $ (introduce h):(actions cs)
 
 rhyme :: String
-rhyme = (intercalate "\n\n" $ map (verse . chars) [1..12]) ++ "\n"
+rhyme = intercalate "\n\n" verses ++ "\n"
+  where verses = verse <$> chars <$> [1..12]
