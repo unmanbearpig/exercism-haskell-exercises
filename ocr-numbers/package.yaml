@@ -2,6 +2,7 @@ name: ocr-numbers
 
 dependencies:
   - base
+  - split
 
 library:
   exposed-modules: OCR
