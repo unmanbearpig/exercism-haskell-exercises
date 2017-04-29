@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
+ {-# OPTIONS_GHC -fno-warn-type-defaults #-}
 
 import Data.List         (sort)
 import Test.Hspec        (Spec, describe, it, shouldBe)
