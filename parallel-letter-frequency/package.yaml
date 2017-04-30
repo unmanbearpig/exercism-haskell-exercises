@@ -1,9 +1,14 @@
 name: parallel-letter-frequency
 
+# -threaded -eventlog -rtsopts -O2
+ghc-options: -threaded -eventlog -rtsopts -O2
+
 dependencies:
   - base
   - containers
   - text
+  - parallel
+  - split
 
 library:
   exposed-modules: Frequency

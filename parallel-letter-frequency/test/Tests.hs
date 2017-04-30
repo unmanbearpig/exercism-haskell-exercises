@@ -8,6 +8,8 @@ import Prelude    hiding (concat, lookup)
 
 import Frequency (frequency)
 
+import Control.Parallel.Strategies
+
 main :: IO ()
 main = hspecWith defaultConfig {configFastFail = True} specs
 
@@ -83,3 +85,11 @@ specs = describe "parallel-letter-frequency" $ do
       it "all three anthems, together, 1 worker" $ testAllAnthems 1
 
       it "all three anthems, together, 4 workers" $ testAllAnthems 4
+
+      let testAllHugeAnthems n = do
+            let frequencies = frequency n $ (map (concat . take 100000 . cycle . (:[])) anthems `using` rdeepseq)
+            lookup 'a' frequencies `shouldBe` Just 4900000
+            lookup 't' frequencies `shouldBe` Just 5600000
+            lookup 'ü' frequencies `shouldBe` Just  200000
+
+      it "all three huge anthems, together, 4 workers" $ testAllHugeAnthems 4
