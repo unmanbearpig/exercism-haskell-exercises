@@ -1,0 +1,26 @@
+name: palindrome-products
+version: 0.1.0.1
+
+ghc-options: -threaded -O2 -Wall
+
+dependencies:
+  - base
+  - text
+  - containers
+  - hmt
+  - universe-base
+
+library:
+  exposed-modules: Palindromes
+  source-dirs: src
+  dependencies:
+  # - foo       # List here the packages you
+  # - bar       # want to use in your solution.
+
+tests:
+  test:
+    main: Tests.hs
+    source-dirs: test
+    dependencies:
+      - palindrome-products
+      - hspec
