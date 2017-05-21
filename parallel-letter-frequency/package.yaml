@@ -9,6 +9,7 @@ dependencies:
   - text
   - parallel
   - split
+  - criterion
 
 library:
   exposed-modules: Frequency
@@ -23,4 +24,13 @@ tests:
     source-dirs: test
     dependencies:
       - parallel-letter-frequency
+      - statistics
       - hspec
+
+benchmarks:
+  bench:
+    main: Benchmark.hs
+    source-dirs: bench
+    dependencies:
+      - parallel-letter-frequency
+      - criterion

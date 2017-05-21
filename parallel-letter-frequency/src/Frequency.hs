@@ -8,8 +8,6 @@ import Control.Parallel.Strategies
 
 type CharCounts = M.Map Char Int
 
--- doesn't actually run in parallel
--- I'm going to look at other solutions
 frequency :: Int -> [T.Text] -> CharCounts
 frequency nWorkers =
   mergeCounts

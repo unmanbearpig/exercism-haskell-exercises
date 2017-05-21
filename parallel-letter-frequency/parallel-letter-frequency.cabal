@@ -17,6 +17,7 @@ library
     , text
     , parallel
     , split
+    , criterion
   exposed-modules:
       Frequency
   other-modules:
@@ -35,6 +36,25 @@ test-suite test
     , text
     , parallel
     , split
+    , criterion
     , parallel-letter-frequency
+    , statistics
     , hspec
+  default-language: Haskell2010
+
+benchmark bench
+  type: exitcode-stdio-1.0
+  main-is: Benchmark.hs
+  hs-source-dirs:
+      bench
+  ghc-options: -threaded -eventlog -rtsopts -O2
+  build-depends:
+      base
+    , containers
+    , text
+    , parallel
+    , split
+    , criterion
+    , parallel-letter-frequency
+    , criterion
   default-language: Haskell2010

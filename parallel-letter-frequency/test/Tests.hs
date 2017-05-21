@@ -1,23 +1,24 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.Map          (empty, fromList, lookup, singleton)
-import Data.Text         (concat)
-import Test.Hspec        (Spec, describe, it, shouldBe)
+import Data.Text         (Text, concat)
+import Test.Hspec        (Spec, describe, it, shouldBe, shouldSatisfy)
 import Test.Hspec.Runner (configFastFail, defaultConfig, hspecWith)
 import Prelude    hiding (concat, lookup)
+import Criterion (benchmarkWith')
+import Criterion.Main    (nf)
+import qualified Criterion.Main as CM
+import Criterion.Types (Benchmarkable, Report, reportAnalysis, anMean, timeLimit)
+import qualified Statistics.Resampling.Bootstrap as B
+import Control.Concurrent (setNumCapabilities)
 
 import Frequency (frequency)
-
-import Control.Parallel.Strategies
 
 main :: IO ()
 main = hspecWith defaultConfig {configFastFail = True} specs
 
 specs :: Spec
-specs = describe "parallel-letter-frequency" $ do
-
-    -- As of 2016-09-16, there was no reference file
-    -- for the test cases in `exercism/x-common`.
+specs = do
 
     let odeAnDieFreude = concat             -- Poem by Friedrich Schiller.
           [ "Freude schöner Götterfunken"   -- The corresponding music is
@@ -86,10 +87,24 @@ specs = describe "parallel-letter-frequency" $ do
 
       it "all three anthems, together, 4 workers" $ testAllAnthems 4
 
-      let testAllHugeAnthems n = do
-            let frequencies = frequency n $ (map (concat . take 100000 . cycle . (:[])) anthems `using` rdeepseq)
-            lookup 'a' frequencies `shouldBe` Just 4900000
-            lookup 't' frequencies `shouldBe` Just 5600000
-            lookup 'ü' frequencies `shouldBe` Just  200000
+      let moreAnthems = take 100 $ cycle anthems
 
-      it "all three huge anthems, together, 4 workers" $ testAllHugeAnthems 4
+      let runBench n = benchmarkWith' (CM.defaultConfig { timeLimit = 0.1 }) (makeBench moreAnthems n)
+
+      it "multiple workers run faster than 1" $ do
+        setNumCapabilities 4
+
+        putStrLn "Run with a single worker"
+        singleWorkerMetric <- measuredMetric <$> runBench 1
+
+        let workers = 4
+        putStrLn $ "Run with " ++ show workers ++ " workers"
+        multiWorkerMetric <- measuredMetric <$> runBench workers
+
+        (singleWorkerMetric / multiWorkerMetric) `shouldSatisfy` (> 1.1)
+
+measuredMetric :: Report -> Double
+measuredMetric = B.estPoint . anMean . reportAnalysis
+
+makeBench :: [Text] -> Int -> Benchmarkable
+makeBench texts n = nf (frequency n) texts -- am I right that I should use nf and not whnf?
